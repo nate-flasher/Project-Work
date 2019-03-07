@@ -1,4 +1,5 @@
 
-Work Repository for nflasher
+Work Repository for Nate Flasher
 
-(students may remove or change this file as desired)
+Email: nate_flasher@taylor.edu
+CSE username: nflasher
