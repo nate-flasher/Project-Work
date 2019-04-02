@@ -3,60 +3,76 @@
 # make this executable: chmod +x /path/to/myfilename.sh
 # run this file: ./myfilename.sh
 
-
-#Print stuff out
 echo  "What is your name my friend?:"
-# get user intput
+
 read name
 
-
-if [[ $name =~ \w* ]]; then
+if [[ $name =~ \D* ]]; then
  echo "That's such a nice name!"
- echo $name >> test.txt
+ echo "Name:"$name >> outFile.txt
 else
  echo "Hey! That's not your actual name!"
 fi
 
+
 echo  "May I ask how old you are" $name "?:"
+
+read age
 #selection
-if [[ $testvar =~ ^(yes)[0-9]$ ]]; then
- echo "ayyy works"
+if [[ $age =~ [0-99] ]]; then
+ echo "You're a youngin'! Got your whole life ahead of you still!"
+ echo "Age:"$age >> outFile.txt
 else
- echo ":("
+ echo "Please enter a valid age!"
 fi
 
-#get date and print it
-echo "here is the date"
-now=$(date)
-    
-    echo $now
-
-# write data to a file
-echo $name >>test.txt
-echo \ "----------------" >> test.txt
-echo $(date) >> test.txt
-echo \ >> test.txt
-echo $testvar >> test.txt
-echo "wrote this to a file ha"
 
 # iteration
-for i in $(seq 1 10);
-do
-   echo $i
-done
+echo "Would you like to count from 0 up to your age" $name "?: (yes/no)"
 
-# read file and print it line by line
-input="test.txt"
-while IFS= read -r var
-do
- echo "$var"
-done < "$input"
+read answer
+
+if [[ $answer =~ "yes" ]]; then
+
+for i in $(seq 0 $age)
+    do
+        echo $i
+    done
+   
+    else
+        echo "You're a loser, no fun =("
+fi
+
+echo "Let's have some more fun!"
+
+echo "Give me an adjective"
+
+read adj
+
+echo "Give me another adjective"
+
+read adjj
+
+echo "Give me a noun" 
+
+read noun
+
+echo "Your rapper name is" $adj $adjj $noun"!"
+
 
 # declare an array variable
-declare -a arr=("element1" "element2" "element3")
+declare -a arr=("$adj" "$adjj" "$noun")
 # now loop through the above array
 for i in "${arr[@]}"
 do
-  echo "$i"
-  # or do whatever with individual element of the array
+  echo "$i" >> outFile.txt
 done
+
+echo "________________________________________________" >> outFile.txt
+
+echo "Also here's the date by the way!"
+
+#get date and print it
+now=$(date)
+    
+    echo $now
