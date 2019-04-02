@@ -6,6 +6,8 @@
 echo  "What is your name my friend?:"
 
 read name
+while [ $name != \D* ]
+do
 
 if [[ $name =~ \D* ]]; then
  echo "That's such a nice name!"
@@ -14,6 +16,7 @@ else
  echo "Hey! That's not your actual name!"
 fi
 
+done
 
 echo  "May I ask how old you are" $name "?:"
 
