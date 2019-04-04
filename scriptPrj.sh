@@ -3,35 +3,48 @@
 # make this executable: chmod +x /path/to/myfilename.sh
 # run this file: ./myfilename.sh
 
-echo  "What is your name my friend?:"
+echo -n  "What is your name my friend? " 
 
 read name
-while [ $name != \D* ]
-do
 
-if [[ $name =~ \D* ]]; then
+echo "Name:"$name >> outFile.txt
+
+while [[ $name =~ [^a-zA-Z] ]]
+do
+ echo "Hey! That's not your actual name!"
+ echo -n  "What is your real name my friend? " 
+ read name
+done
+
+: '
+if [[ $name =~ ^[a-zA-Z]+$ ]]; then
  echo "That's such a nice name!"
  echo "Name:"$name >> outFile.txt
 else
  echo "Hey! That's not your actual name!"
 fi
+'
 
-done
 
-echo  "May I ask how old you are" $name "?:"
+echo  "May I ask how old you are $name? "
 
 read age
 #selection
-if [[ $age =~ [0-99] ]]; then
- echo "You're a youngin'! Got your whole life ahead of you still!"
+if (( $age > 0 && $age <= 99 )); then
+# echo "You're a youngin'! Got your whole life ahead of you still!"
+cat << END
+You're a youngin'! Got your whole life ahead of you still!
+END
  echo "Age:"$age >> outFile.txt
 else
- echo "Please enter a valid age!"
+ echo "Secretive much? Whatever."
 fi
 
 
+
+
 # iteration
-echo "Would you like to count from 0 up to your age" $name "?: (yes/no)"
+echo "Would you like to count from 0 up to your age $name (yes/no)? "
 
 read answer
 
@@ -60,7 +73,7 @@ echo "Give me a noun"
 
 read noun
 
-echo "Your rapper name is" $adj $adjj $noun"!"
+echo "Your rapper name is $adj $adjj $noun!"
 
 
 # declare an array variable
