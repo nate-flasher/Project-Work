@@ -1,7 +1,7 @@
 # Wallpaper Rotator
 
 # Description
-    -   This script is designed to allow users the ability to have their wallpapers rotate on a fixed schedule chosen by the user.
- 
+    -   This script is designed to temporarly entertain users for a short period of time while writing their name, age, and rapper name to a file
+    . 
 # Instructions
-    -   This is not a complicated script to use...
+    -   Simply run the script and follow the prompts given to you by the shell.     -   Enjoy!
