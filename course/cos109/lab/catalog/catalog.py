@@ -23,7 +23,7 @@ def create_course():
 
     values = (new_code, new_title, new_credit)
 
-    cursor.execute('INSERT INTO course (code, title, credit) VALUES (?, ?, ?) values')
+    cursor.execute('INSERT INTO course (code, title, credit) VALUES (?, ?, ?)', values)
     connection.commit()
 
 
