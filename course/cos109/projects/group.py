@@ -17,12 +17,12 @@ def create_group():
 
     print("\nCreate a new group")
 
-    new_group = input(">>> Group name: ")
-    new_notes = input(">>> Notes: ")
+    new_gName = input(">>> Group name: ")
+    new_Notes = input(">>> Notes: ")
 
-    values = (new_group, new_notes)
+    values = (new_gName, new_Notes)
 
-    cursor.execute('INSERT INTO group (group_name, notes) VALUES (?, ?, ?)', values)
+    cursor.execute('INSERT INTO "group" (Group_name, Notes) VALUES (?, ?)', values)
     connection.commit()
 
 
