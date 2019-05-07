@@ -26,44 +26,41 @@ def create_group():
     connection.commit()
 
 
-def read_course():
+def read_group():
 
-    print("\nCourse records:")
-    for row in cursor.execute('SELECT * FROM course'):
+    print("\nGroup records:")
+    for row in cursor.execute('SELECT * FROM "group"'):
         print(row)
 
 
-def update_course():
-    read_course()
-    modify_this_id = input(">>> Modify course (integer course identifier): ")
+def update_group():
+    read_group()
+    modify_this_id = input(">>> Modify group (Which group number?): ")
 
-    cursor.execute("SELECT * FROM course WHERE course_id = ?", (modify_this_id))
-    (course_id, cur_code, cur_title, cur_credit) = cursor.fetchone()
+    cursor.execute("SELECT * FROM 'group' WHERE Group_number = ?", (modify_this_id))
+    (cur_name, cur_note, Group_number) = cursor.fetchone()
 
-    new_code = input(">>> Course code [%s]: " % cur_code)
-    if new_code == '':
-        new_code = cur_code
+    new_note = input(">>> Group notes [%s]: " % cur_note)
+    if new_note == '':
+        new_note = cur_note
 
-    new_title = input(">>> Course title [%s]: " % cur_title)
-    if new_title == '':
-        new_title = cur_title
+    new_name = input(">>> Group name [%s]: " % cur_name)
+    if new_name == '':
+        new_name = cur_name
 
-    new_credit = input(">>> Course credit [%s]: " % cur_credit)
-    if new_credit == '':
-        new_credit = cur_credit
 
-    values = (new_code, new_title, new_credit, modify_this_id)
-    cursor.execute("UPDATE course SET code = ?, title = ?, credit = ? WHERE course_id = ?", values)
+    values = (new_note, new_name, modify_this_id)
+    cursor.execute("UPDATE 'group' SET Notes = ?, Group_name = ? WHERE Group_number = ?", values)
     connection.commit()
 
 
 
-def delete_course():
+def delete_group():
 
-    read_course()
-    delete_this_id = input(">>> Delete course(integer course identifier): ")
+    read_group()
+    delete_this_id = input(">>> Delete group (Which group number?): ")
 
-    cursor.execute("DELETE FROM course WHERE course_id = ?", delete_this_id)
+    cursor.execute("DELETE FROM 'group' WHERE Group_number = ?", delete_this_id)
     connection.commit()
 
 
@@ -80,10 +77,10 @@ while True:
         create_group()
 
     elif selection == 'R':
-        read_course()
+        read_group()
 
     elif selection == 'U':
-        update_course()
+        update_group()
 
     elif selection == 'D':
-        delete_course()
+        delete_group()
