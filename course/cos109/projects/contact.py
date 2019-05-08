@@ -1,12 +1,10 @@
 import sqlite3
-import csv
 
 menutext = """
 C) Create a contact
 R) Show records in contact table
 U) Update a contact
 D) Delete a contact
-E) Export data ot csv file
 X) Exit the program
 """
 
@@ -102,12 +100,6 @@ def delete_contact():
     connection.commit()
 
 
-def export_contact():
-
-    with open('addressBook.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow
-
 while True:
 
     print(menutext)
@@ -127,6 +119,3 @@ while True:
 
     elif selection == 'D':
         delete_contact()
-
-    elif selection == 'E':
-        export_contact()
