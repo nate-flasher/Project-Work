@@ -68,7 +68,7 @@ def delete_group():
 while True:
 
     print(menutext)
-    selection = input(">>> C,R,U,D, or X ot exit")
+    selection = input(">>> C,R,U,D, or X or exit")
 
     if selection == 'X':
         break

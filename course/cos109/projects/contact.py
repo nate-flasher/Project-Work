@@ -5,6 +5,7 @@ C) Create a contact
 R) Show records in contact table
 U) Update a contact
 D) Delete a contact
+E) Export to CSV file
 X) Exit the program
 """
 
@@ -30,7 +31,8 @@ def create_contact():
     values = (new_firstname, new_lastname, new_emailaddress, new_secondaryemailaddress, new_organization, new_phone, new_secondaryphone, new_birthday, new_notes)
 
     cursor.execute(
-        'INSERT INTO "contact" (Firstname, Lastname, Email_address, Secondary_email_address, Organization, Phone, Secondary_phone, Birthday, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', values)
+        "INSERT INTO 'contact' (Firstname, Lastname, Email_address, Secondary_email_address, "
+        "Organization, Phone, Secondary_phone, Birthday, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
     connection.commit()
 
 
@@ -100,10 +102,28 @@ def delete_contact():
     connection.commit()
 
 
+def export_contact():
+    file = open("addressBook.csv","w")
+    begin = True
+    file.write("Firstname, Lastname, Email_address, Secondary_email_address, Organization, Phone, Secondary_phone, Birthday, Notes, Contact_number\n")
+    for line in cursor.execute("SELECT * FROM 'contact'"):
+        for field in line:
+            if begin:
+                file.write(str(field))
+                begin = False
+            else:
+                file.write(", " + str(field))
+        file.write('\n')
+        begin = True
+    file.close()
+
+
+
+
 while True:
 
     print(menutext)
-    selection = input(">>> C,R,U,D, or X ot exit")
+    selection = input(">>> C,R,U,D,E or X or exit")
 
     if selection == 'X':
         break
@@ -119,3 +139,6 @@ while True:
 
     elif selection == 'D':
         delete_contact()
+
+    elif selection == 'E':
+        export_contact()
