@@ -6,15 +6,14 @@
 void readBitmapMetadata(FILE *file1){
     int width = 0;
     int height = 0;
-    int startPos = 0;
+    int startPos = 54;
 
     fseek(file1, 18, SEEK_SET);
     fread(&width, sizeof(int), 1, file1);
     fread(&height, sizeof(int), 1, file1);
 
-    fseek(file1, 0L, SEEK_SET);
+    fseek(file1, startPos, SEEK_SET);
     
-    startPos = fgetc(file1);
     printf("Start Position of pixel array: %d\n", startPos);
     printf("Width of Image: %d\n", width);
     printf("Height of Image: %d\n", height);
