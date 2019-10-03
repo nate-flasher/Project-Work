@@ -9,7 +9,7 @@ char encrypt(char *typeOfChrypt, int key, int text) {
 
         if (strcmp(typeOfChrypt, "-e") == 0) {
             if ((text + key) > 90) {
-                text = 64 + key;
+                text = 64 + (key+text)%90;
                 printf("%c", text);
                 return (char) text;
             } else {
@@ -19,7 +19,7 @@ char encrypt(char *typeOfChrypt, int key, int text) {
             }
         } else {
             if ((text - key) < 65) {
-                text = 90 - key;
+                text = 91 + (key-text)%65;
                 printf("%c", text);
                 return (char) text;
             } else {
@@ -34,17 +34,23 @@ char encrypt(char *typeOfChrypt, int key, int text) {
 
             if (strcmp(typeOfChrypt, "-e") == 0) {
                 if((text + key) > 122) {
-                    text = 96 + key;
+                    text = 96 + (key+text)%122;
                     printf("%c", text);
                     return (char) text;
-                }else {
+                }/*else if((text + key) < 97){
+                    text = 123 + (key + text);
+                    printf("%c", text);
+                    return (char) text;
+                }
+                */
+                else {
                     text = text + key;
                     printf("%c", text);
                     return (char) text;
                 }
             } else {
                 if((text - key) < 97) {
-                    text = 122 - key;
+                    text = 123 + (key-text)%97;
                     printf("%c", text);
                     return (char) text;
                 }else {
