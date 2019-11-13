@@ -25,6 +25,7 @@
  			}
 			
 			$password = $_POST['password'];
+			$hashed_password = password_hash($password, PASSWORD_BCRYPT);
 			
 			$check = mysqli_query($DB, "SELECT * FROM users WHERE username = '".$_POST['uname']."'") or die(mysqli_error($DB));
  
@@ -35,7 +36,7 @@
 		}
 		else
 		{
-			mysqli_query($DB, "INSERT INTO users (username, pass, fname, lname) VALUES ('".$_POST['uname']."', '". $password ."', '". $_POST['fname']."', '". $_POST['lname'] ."');")or die(mysqli_error());
+			mysqli_query($DB, "INSERT INTO users (username, pass, fname, lname) VALUES ('".$_POST['uname']."', '". $hashed_password ."', '". $_POST['fname']."', '". $_POST['lname'] ."');")or die(mysqli_error());
 			
 			echo "<h3> Registration Successful!</h3> <p>Welcome ". $_POST['fname'] ."! Please log in...</p>";
 		} 

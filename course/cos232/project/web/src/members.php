@@ -13,7 +13,7 @@
 		}
 		
 		$password = $_POST['password'];
-		
+
 		$check = mysqli_query($DB, "SELECT * FROM users WHERE username = '".$_POST['username']."'")or die(mysqli_error($DB));
 		
  		//Gives error if user already exist
@@ -25,7 +25,7 @@
 		{
 			while($info = mysqli_fetch_array($check )) 	{
 			 	//gives error if the password is wrong
-				if ($password != $info['pass']) {
+				if (!password_verify($password, $info['pass'])) {
 					die('Incorrect password, please try again.');
 				}
 			}
@@ -50,7 +50,7 @@
 		<div class="post-bgbtm">
         <h2 class = "title">hackme bulletin board</h2>
         	<?php
-            if(!isset($_COOKIE['hackme'])){
+            if(!isset($_COOKIE['hackme_pass'])){
 				 die('Why are you not logged in?!');
 			}else
 			{

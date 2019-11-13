@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `threads` (
 
 CREATE TABLE IF NOT EXISTS `users` (
   `username` char(20) NOT NULL,
-  `pass` char(40) NOT NULL,
+  `pass` char(60) NOT NULL,
   `fname` varchar(25) NOT NULL,
   `lname` varchar(25) NOT NULL,
   PRIMARY KEY  (`username`)
