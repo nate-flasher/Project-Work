@@ -22,8 +22,19 @@
 				!$_POST['fname'] | !$_POST['lname']) {
  				die('<p>You did not fill in a required field.
 				Please go back and try again!</p>');
- 			}
-			
+			}
+
+			if(strlen($_POST['password']) <= 7){
+                              die('<p>Your password is not at least 8 characters.</p>');
+                        }
+
+                        //if(strpos($_POST['password'], '!')| strpos($_POST['password'], '@')){
+                        if(!preg_match('/[^a-zA-Z\d]/', $_POST['password'])){
+                              die('<p>You must include at least one non dictionary character.</p>');
+                        }
+
+		
+
 			$password = $_POST['password'];
 			$hashed_password = password_hash($password, PASSWORD_BCRYPT);
 			
