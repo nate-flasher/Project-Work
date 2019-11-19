@@ -1,0 +1,7 @@
+# Essay for Web Security Project Part 2
+
+This part through me for a loop. I had to do a good amount of research to understand what I was fully trying to accomplish as my attack was not working the first several times I attempted to do so. 
+
+My attack took advantage of the fact that there was no way to reauthenticate a user that went from a different website back to the hackme application. In exploiting this vulnerability, the victim clicks my link and is directed to a website where they instructed to fill out a registration form. In my implementation behind this attack I made it so when they click register it redirects them back to the hackme application (that they were already logged in to) and set the title and message variables equal to whatever I wanted. In this case they were what the professor wanted them to be. In doing this, the victim unknowingly and unintentionally submits a post with that message and title. 
+
+I fixed this vulnerability by implementing a synchronizer token pattern. I gave the user a csrf token if they did not already have one in their session when they log in. Then when they go to post something I check to see, before the post is executed, if their session csrf token is equal to the paired scrf token stored on the server side. If they are equal then the post works fine like it should. If there is NO token or if they ARE NOT equal then I have it abort everything assuming a csrf attack is taking place.  

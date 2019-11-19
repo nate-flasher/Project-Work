@@ -5,17 +5,36 @@
 	
 	//if the login form is submitted 
 	if (isset($_POST['post_submit'])) {
-		
+
+
+	if ($_SESSION['csrf_token']) {
+    		$csrf_token = $_SESSION['csrf_token'];
+	} else {
+    		$csrf_token = uniqid();
+    		$_SESSION['csrf_token'] = $csrf_token;
+	}
+
+
+
+
 		$_POST['title'] = trim($_POST['title']);
 		if(!$_POST['title'] | !$_POST['message']) {
 			include('header.php');
 			die('<p>You did not fill in a required field.
 			Please go back and try again!</p>');
 		}
-		
+
+		if(!$_POST['token'] | $_POST['token'] != $csrf_token){
+			exit();
+		}
+
+
 		mysqli_query($DB, "INSERT INTO threads (username, title, message, date) VALUES('".$_COOKIE['hackme']."', '". $_POST['title']."', '". $_POST[message]."', '".time()."')")or die(mysqli_error($DB));
 		
 		header("Location: members.php");
+
+
+
 	}
 ?>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -45,6 +64,7 @@
             <p> do not leave any fields blank... </p>
             
             <form method="post" action="post.php">
+	    <input type="hidden" name="token" value="<?=$csrf_token?>">
             Title: <input type="text" name="title" maxlength="50"/>
             <br />
             <br />
