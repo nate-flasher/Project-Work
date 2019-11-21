@@ -4,7 +4,9 @@
 	$DB = connect();
 	session_start();
 
-
+	function escape($string){
+		return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+	}
 	//if the login form is submitted 
 	if ($_SESSION['csrf_token']) {
     		$csrf_token = $_SESSION['csrf_token'];
@@ -15,7 +17,7 @@
 	
 	if (isset($_POST['post_submit'])) {
 
-
+		escape($_POST['message']);
 		$_POST['title'] = trim($_POST['title']);
 		if(!$_POST['title'] | !$_POST['message']) {
 			include('header.php');
