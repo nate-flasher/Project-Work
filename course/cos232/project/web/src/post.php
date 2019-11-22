@@ -17,9 +17,9 @@
 	
 	if (isset($_POST['post_submit'])) {
 
-		escape($_POST['message']);
+		$goodMessage = escape($_POST['message']);
 		$_POST['title'] = trim($_POST['title']);
-		if(!$_POST['title'] | !$_POST['message']) {
+		if(!$_POST['title'] | !$goodMessage) {
 			include('header.php');
 			die('<p>You did not fill in a required field.
 			Please go back and try again!</p>');
@@ -32,7 +32,7 @@
  		
 
 
-		mysqli_query($DB, "INSERT INTO threads (username, title, message, date) VALUES('".$_COOKIE['hackme']."', '". $_POST['title']."', '". $_POST[message]."', '".time()."')")or die(mysqli_error($DB));
+		mysqli_query($DB, "INSERT INTO threads (username, title, message, date) VALUES('".$_COOKIE['hackme']."', '". $_POST['title']."', '". $goodMessage."', '".time()."')")or die(mysqli_error($DB));
 		
 		header("Location: members.php");
 
