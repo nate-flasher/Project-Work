@@ -1,0 +1,6 @@
+# Essay for Web Security Project Part 3
+
+In this part of the project I logged in to my website and tested if the application was vulnerable by inserting a script that alerted to the screen if the user clicked on the post. That worked successfully so I knew the attack was possible. 
+I then proceeded to do research on how I could construct the attack and what I could grab to access the username and password. I found out that there is a variable for getting a session's cookies called document.cookie. This was then the the data I would try and steal. Then I learned I could make an XML http post request and use that to send the cookies to my php application which would then store them in a database. I was able to do all of this, after running into mulitple challenges, successfully.
+
+I fixed this vulnerability by creating a function called escape. The function took a string arugment and made it so that any message posted by a user would never be ran or executed, rather all characters would be shown to the screen as characters. This prevented any code to ever be injected into the application. Therefore now, when someone wants to attack with XSS or simply type code into a post, it will be visible in the post rather than being injected into the application.
