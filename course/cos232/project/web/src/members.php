@@ -13,8 +13,8 @@
 		}
 		
 		$password = $_POST['password'];
-
-		$check = mysqli_query($DB, "SELECT * FROM users WHERE username = '".$_POST['username']."'")or die(mysqli_error($DB));
+		$uname = mysqli_real_escape_string($DB, $_POST['username']);
+		$check = mysqli_query($DB, "SELECT * FROM users WHERE username = '$uname'")or die(mysqli_error($DB));
 		
  		//Gives error if user already exist
  		$check2 = mysqli_num_rows($check);

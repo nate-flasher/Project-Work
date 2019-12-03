@@ -31,8 +31,9 @@
 		}
  		
 
-
-		mysqli_query($DB, "INSERT INTO threads (username, title, message, date) VALUES('".$_COOKIE['hackme']."', '". $_POST['title']."', '". $goodMessage."', '".time()."')")or die(mysqli_error($DB));
+		$hackmeCookie = mysqli_real_escape_string($DB, $_COOKIE['hackme']);
+		$title = mysqli_real_escape_string($DB, $_POST['title']);
+		mysqli_query($DB, "INSERT INTO threads (username, title, message, date) VALUES('$hackmeCookie', '$title', '". $goodMessage."', '".time()."')")or die(mysqli_error($DB));
 		
 		header("Location: members.php");
 
