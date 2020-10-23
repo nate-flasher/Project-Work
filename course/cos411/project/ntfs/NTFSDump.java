@@ -5,6 +5,10 @@ import java.lang.*;
 import java.nio.*;
 public class NTFSDump {
 
+
+    //the size of each mft entry in NTFS
+    private int mftEntrySize = 1024;
+
     public static void parseMFT(int volumeOffset, File diskImage) throws IOException {
         int bytesPerSector = 512;
         int sectorsPerCluster = 8;
@@ -18,19 +22,17 @@ public class NTFSDump {
         int byteOffset = volumeOffset + (bytesPerSector*sectorsPerCluster*numberOfClusters);
         System.out.println("Byte offset: " + byteOffset + "\n");
 
-        //the size of each mft entry in NTFS
-        int mftEntrySize = 1024;
-
-        //creates new byte array of all that stores all MFT entries that are (1024) byte arrays themselves
-        byte [][] allMFTEntries = new byte [65][1024];
+        byte [][] allMFTEntries = new byte[65][1024];
+/*
+        int offsetToFirstAttribute;
 
         InputStream inputStream = new FileInputStream(diskImage);
         inputStream.skip(byteOffset);
-        ByteBuffer tempBuf = ByteBuffer.wrap(allMFTEntries[0]);
+        ByteBuffer tempBuf = ByteBuffer.wrap(this.allMFTEntries[0]);
         tempBuf.order(ByteOrder.LITTLE_ENDIAN);
 
         // within the MFT entry, grabs the offset to the first attribute
-        int offsetToFirstAttribute = tempBuf.getShort(20);
+        this.offsetToFirstAttribute = tempBuf.getShort(20);
 
         int nextByte = 0;
 
@@ -43,7 +45,7 @@ public class NTFSDump {
             // read in the first 16 bytes as the attribute header
             byte[] attributeHeader = new byte[16];
             for(int i = 0; i < attributeHeader.length; i++) {
-                attributeHeader[i] = allMFTEntries[0][offsetToFirstAttribute + i];
+                attributeHeader[i] = this.allMFTEntries[0][this.offsetToFirstAttribute + i];
             }
             ByteBuffer attributeHeaderBuf = ByteBuffer.wrap(attributeHeader);
             attributeHeaderBuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -60,20 +62,25 @@ public class NTFSDump {
 
 
             // increments the next byte
-            nextByte = allMFTEntries[0][offsetToFirstAttribute + 1];
-        }
-/*
-        for (int i = 0; i < this.allMFTEntries.length; i++){
-            inputStream.read(this.allMFTEntries[i], 0, 1024);
-            ByteBuffer tempBuf = ByteBuffer.wrap(this.allMFTEntries[i]);
-            tempBuf.order(ByteOrder.LITTLE_ENDIAN);
-            int y = tempBuf.getInt(24);
-            int x = tempBuf.getInt(28);
-            System.out.println("Used space of file: " + y + "bytes " + "\n");
-            System.out.println("Allocated size of file: " + x + "bytes " + "\n");
+            nextByte = this.allMFTEntries[0][this.offsetToFirstAttribute + 1];
         }
 
  */
+        InputStream inputStream = new FileInputStream(diskImage);
+        inputStream.skip(byteOffset);
+        for (int i = 0; i < allMFTEntries.length; i++){
+            inputStream.read(allMFTEntries[i], 0, 1024);
+            ByteBuffer tempBuf = ByteBuffer.wrap(allMFTEntries[i]);
+            tempBuf.order(ByteOrder.LITTLE_ENDIAN);
+            int y = tempBuf.getInt(24);
+            int x = tempBuf.getInt(28);
+            int offsetToFirstAttr = tempBuf.getShort(20);
+            System.out.println("Offset to first attribute for entry " + Arrays.toString(allMFTEntries[i]) + " =  " + offsetToFirstAttr + "\n");
+            //System.out.println("Used space of file: " + y + "bytes " + "\n");
+            //System.out.println("Allocated size of file: " + x + "bytes " + "\n");
+        }
+
+
         inputStream.close();
 
     }
@@ -96,3 +103,4 @@ public class NTFSDump {
 
 
 }
+
