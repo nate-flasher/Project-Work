@@ -1,5 +1,4 @@
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+
 import java.io.FileInputStream;
 import java.io.*;
 import java.lang.*;
@@ -33,6 +32,16 @@ public class NTFSDump {
 
         int attributeLength = 0;
 
+        int attributeType = 16;
+
+        int offsetToLengthOfAttribute = 0;
+
+        int offsetToAttributeFromHeader = 0;
+
+        int lengthOfAttribute = 0;
+
+        int offsetToAttributeHeader = 0;
+
         //loops through each MFT entry
         for (int i = 0; i < allMFTEntries.length; i++){
 
@@ -46,10 +55,9 @@ public class NTFSDump {
             forFirstAttributeBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
             //gets the offset to each MFT entry's first attribute and stores in in a variable
-            int offsetToAttributeHeader = forFirstAttributeBuffer.getShort(20);
-            //System.out.println(offsetToFirstAttr + "\n");
+            offsetToAttributeHeader = forFirstAttributeBuffer.getShort(20);
+            //System.out.println("offset to attribute header: " + offsetToAttributeHeader + "\n");
 
-           int attributeType = 16;
 
             while(attributeType != 255) { //0xFF
 
@@ -57,9 +65,15 @@ public class NTFSDump {
                 byte [] attributeHeader = new byte [16];
 
                 //loops the attribute header and sets each attribute header's index to the correct offset in it's current MFT entry
+                //System.out.println("offset to attribute header: " + offsetToAttributeHeader + "\n");
+                //System.out.println("attribute length: " + attributeLength + "\n");
+                //System.out.println();
+                offsetToAttributeHeader = offsetToAttributeHeader + attributeLength;
+                System.out.println("offset to attribute header: " + offsetToAttributeHeader + "\n");
                 for(int a = 0; a < attributeHeader.length; a++){
-                    attributeHeader[a] = allMFTEntries[i][offsetToAttributeHeader + attributeLength + a];
+                    attributeHeader[a] = allMFTEntries[i][offsetToAttributeHeader + a];
                 }
+
 
                 //wraps the attribute header in a byte buffer
                 ByteBuffer attributeHeaderBuffer = ByteBuffer.wrap(attributeHeader);
@@ -67,22 +81,20 @@ public class NTFSDump {
                 //sets the byte buffer for the attribute header to use little endian format for bytes
                 attributeHeaderBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-                attributeType = attributeHeaderBuffer.getInt(0);
-                //System.out.println(attributeType);
-
                 //gets the length of this attribute
                 attributeLength = attributeHeaderBuffer.getInt(4);
+                    System.out.println("attribute length: " + attributeLength + "\n");
 
-                //grabs the attribute type
+
+                    //grabs the attribute type
                 //if value of attributeType = 16: STANDARD_INFO attribute
                 //if value of attributeType = 48: FILE_NAME attribute
                 //if value of attributeType = 128: DATA attribute
 
 
                 attributeType = attributeHeaderBuffer.getInt(0);
-                System.out.println(attributeType);
+                //System.out.println(attributeType);
 
-            //System.out.println(attributeLength);
 
                 //gets value of whether or not the attributes are resident or not
                 int residentFlag = attributeHeaderBuffer.get(8);
@@ -91,7 +103,8 @@ public class NTFSDump {
                 if (residentFlag == 0) {
 
                     //offset to the length of the attribute content = offset to attribute header + 16 bytes
-                    int offsetToLengthOfAttribute = offsetToAttributeHeader + 16;
+                    offsetToLengthOfAttribute = 0;
+                    offsetToLengthOfAttribute = offsetToAttributeHeader + 16;
 
                     //creating a byte array to store bytes 16-21 (length of attribute and offset to attribute)
                     byte[] residentBytes = new byte[6];
@@ -100,6 +113,7 @@ public class NTFSDump {
                     for (int b = 0; b < residentBytes.length; b++) {
                         residentBytes[b] = allMFTEntries[i][offsetToLengthOfAttribute + b];
                     }
+
                     //wraps the resident bytes in a byte buffer
                     ByteBuffer residentBytesBuffer = ByteBuffer.wrap(residentBytes);
 
@@ -107,11 +121,11 @@ public class NTFSDump {
                     residentBytesBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
                     //gets the length of the attribute
-                    int lengthOfAttribute = residentBytesBuffer.getInt(0);
+                    lengthOfAttribute = residentBytesBuffer.getInt(0);
                     //System.out.println(lengthOfAttribute);
 
                     //gets the offset to the actual attribute
-                    int offsetToAttributeFromHeader = residentBytesBuffer.getShort(4);
+                    offsetToAttributeFromHeader = residentBytesBuffer.getShort(4);
                     //System.out.println(offsetToAttributeFromHeader);
 
                     //gets the final and official offset to the attributes from beginning of MFT entry
@@ -143,7 +157,7 @@ public class NTFSDump {
 
                     } else if (attributeType == 48) { //FILE_NAME attribute
 
-                        System.out.println("File type: $FILE_NAME (0x30)");
+                        //System.out.println("File type: $FILE_NAME (0x30)" + "\n");
 
                         int allocatedSizeOfFile = attributeBytesBuffer.getInt(40);
                         //System.out.println(allocatedSizeOfFile + "\n");
@@ -151,6 +165,7 @@ public class NTFSDump {
 
 
                 }
+
             }
 
 
