@@ -3,8 +3,6 @@ project(HTTPServer C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(CMAKE_C_EXTENSIONS OFF)
-
 if (MSVC)
     # warning level 4
     add_compile_options(/W4)
