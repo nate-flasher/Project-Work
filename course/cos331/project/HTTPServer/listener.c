@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define MYHOST "localhost"
-#define MYPORT "8080"
+//#define MYPORT "8080"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
 
 
@@ -18,7 +18,16 @@ void handle_connection(int accept_desc){
     fflush(stdout); //makes sure printf prints to terminal
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if (argc !=3){
+        printf("Error: more or less than 3 command line arguments");
+        return 0;
+    }
+
+    char * pathToDocs = argv[1]; //stores file path to access docs from taken from command line
+    char * portNumber = argv[2]; //stores port number passed in from command line into variable
+
 
     int socket_descriptor, accept_desc;
     int return_value;
@@ -35,7 +44,7 @@ int main() {
     hints.ai_socktype = SOCK_STREAM; // TCP connection (ordered packets), not UDP DGRAM (unordered packets)
     hints.ai_flags = AI_PASSIVE; // Specifies socket to listen
 
-    return_value = getaddrinfo(MYHOST, MYPORT, &hints, &address_resource);
+    return_value = getaddrinfo(MYHOST, portNumber, &hints, &address_resource);
 
     if(return_value != 0){ //error check
         printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
