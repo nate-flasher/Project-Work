@@ -5,16 +5,38 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
 #define MYHOST "localhost"
 //#define MYPORT "8080"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
+char * pathToDocs;
+char * portNumber;
 
 
 void handle_connection(int accept_desc){
-    char c;
-    recv(accept_desc, &c, 1, 0); //puts received data in char c
-    printf("%c\n", c);
+    int fileSize;
+    FILE *receivedFile;
+    int fd;
+
+    char HTTPHeader [10000];
+    recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in buffer
+    printf("%s\n", HTTPHeader);
+    char * fullPathToFile = strncat(pathToDocs, "/index.html",115);
+    printf("%s\n", fullPathToFile);
+    //receivedFile = fopen(fullPathToFile, "r");
+    //unsigned char buff[256]={0};
+    //int nread = fread(buff, 1, 256, receivedFile);
+    //if (nread > 0){
+        send(accept_desc, &fullPathToFile, sizeof(fullPathToFile), 0);
+    //}
+    //fclose(receivedFile);
+
+
+
+    //printf("%s\n", c);
+    //printf("%s\n", s);
     fflush(stdout); //makes sure printf prints to terminal
 }
 
@@ -25,8 +47,8 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    char * pathToDocs = argv[1]; //stores file path to access docs from taken from command line
-    char * portNumber = argv[2]; //stores port number passed in from command line into variable
+    pathToDocs = argv[1]; //stores file path to access docs from taken from command line
+    portNumber = argv[2]; //stores port number passed in from command line into variable
 
 
     int socket_descriptor, accept_desc;
@@ -86,8 +108,6 @@ int main(int argc, char *argv[]) {
         printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
         return return_value;
     }
-
-
 
 
     //accept is function that gets triggered when data comes in on our socket. Second param specific address of where data is coming in from
