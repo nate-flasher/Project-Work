@@ -11,7 +11,8 @@
 #define MYHOST "localhost"
 //#define MYPORT "8080"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
-char * pathToDocs;
+
+char pathToDocs[1024];
 char * portNumber;
 
 
@@ -22,17 +23,25 @@ void handle_connection(int accept_desc){
 
     char HTTPHeader [10000];
     recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in buffer
-    printf("%s\n", HTTPHeader);
-    char * fullPathToFile = strncat(pathToDocs, "/index.html",115);
-    printf("%s\n", fullPathToFile);
-    //receivedFile = fopen(fullPathToFile, "r");
-    //unsigned char buff[256]={0};
-    //int nread = fread(buff, 1, 256, receivedFile);
-    //if (nread > 0){
-        send(accept_desc, &fullPathToFile, sizeof(fullPathToFile), 0);
-    //}
-    //fclose(receivedFile);
+    printf("HTTPHeader: %s\n", HTTPHeader);
+    // int sscanf(const char *str, const char *format, ...);
+    // int sscanf( HTTPHeader, "GET %s", addrOfRestOfCommand )
 
+    char * fullPathToFile = strncat(pathToDocs, "/index.html",115);
+    printf("fullPathToFile: %s\n", fullPathToFile);
+
+    receivedFile = fopen(fullPathToFile, "r");
+    unsigned char buff[256]={0};
+
+    int nread = fread(buff, 1, 256, receivedFile);
+    while (nread > 0){
+        send(accept_desc, buff, nread, 0);
+        nread = fread(buff, 1, 256, receivedFile);
+    }
+    if( nread<0 ) {
+        fprintf(stderr, "Error reading remote file\n");
+    }
+    fclose(receivedFile);
 
 
     //printf("%s\n", c);
@@ -47,7 +56,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    pathToDocs = argv[1]; //stores file path to access docs from taken from command line
+    strncpy(pathToDocs,argv[1], 1024); //stores file path to access docs from taken from command line
     portNumber = argv[2]; //stores port number passed in from command line into variable
 
 
