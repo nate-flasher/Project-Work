@@ -7,29 +7,28 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 #define MYHOST "localhost"
 //#define MYPORT "8080"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
+#define MAX_BUFFER_SIZE 256
 
 char pathToDocs[1024];
 char * portNumber;
 
 
-void handle_connection(int accept_desc){
-    int fileSize;
+
+void sendFD(int accept_desc, char * fileName){
+    /*
+    char responseBuffer[MAX_BUFFER_SIZE];
+    memset(responseBuffer, 0, MAX_BUFFER_SIZE);
+    int bytesSent;
+     */
     FILE *receivedFile;
-    int fd;
 
-    char HTTPHeader [10000];
-    recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in buffer
-    printf("HTTPHeader: %s\n", HTTPHeader);
-    // int sscanf(const char *str, const char *format, ...);
-    // int sscanf( HTTPHeader, "GET %s", addrOfRestOfCommand )
-
-    char * fullPathToFile = strncat(pathToDocs, "/index.html",115);
+    char * fullPathToFile = strncat(pathToDocs, fileName,115);
     printf("fullPathToFile: %s\n", fullPathToFile);
-
     receivedFile = fopen(fullPathToFile, "r");
     unsigned char buff[256]={0};
 
@@ -42,11 +41,71 @@ void handle_connection(int accept_desc){
         fprintf(stderr, "Error reading remote file\n");
     }
     fclose(receivedFile);
+/*
+    bytesSent = send(accept_desc, responseBuffer, strlen(responseBuffer), 0);
+    if (bytesSent == -1){
+        printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
+    }
+    */
+
+}
 
 
-    //printf("%s\n", c);
-    //printf("%s\n", s);
-    fflush(stdout); //makes sure printf prints to terminal
+void handle_connection(int accept_desc) {
+    char HTTPHeader[10000];
+    int bytesRead;
+    //int cursor = 0;
+    //char requestBuffer[MAX_BUFFER_SIZE];
+
+    //memset(requestBuffer, 0, MAX_BUFFER_SIZE);
+
+    while (1) {
+        bytesRead = recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in HTTPBuffer
+printf("%d bytes read\n", bytesRead);
+        if (bytesRead <= 0) {
+printf("<=0 bytes read");
+            if (bytesRead == -1) {
+                printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
+            }
+            return;
+        }
+
+        else if (strlen(HTTPHeader) == 0) {
+printf("HTTPHeader == 0 len");
+            return;
+        }
+
+        printf("%s", HTTPHeader);
+        if (strncmp(HTTPHeader, "GET", 3) == 0) { //checks if GET request and if looking for /index.html  (SEND condition)
+printf("Yay! Got a file request");
+            // NOTE: Trashing header
+            char * start = &HTTPHeader[4];
+            char * end = strchr(start, ' ');
+            if (end == NULL){
+                printf("MAYDAY");
+                return;
+            }
+            *end = '\0';
+            sendFD(accept_desc, start, true);
+            return;
+        }
+
+
+        //cursor = 0;
+        //memset(requestBuffer, 0, MAX_BUFFER_SIZE);
+
+
+        /*} else {
+
+            if (cursor < MAX_BUFFER_SIZE) {
+                requestBuffer[cursor] = 0;
+                cursor++;
+            }
+
+
+        }
+*/
+    }
 }
 
 int main(int argc, char *argv[]) {
