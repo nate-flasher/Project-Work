@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define MYHOST "localhost"
-//#define MYPORT "8080"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
 #define MAX_BUFFER_SIZE 256
 
@@ -19,34 +19,26 @@ char * portNumber;
 
 
 
-void sendFD(int accept_desc, char * fileName){
-    /*
-    char responseBuffer[MAX_BUFFER_SIZE];
-    memset(responseBuffer, 0, MAX_BUFFER_SIZE);
-    int bytesSent;
-     */
-    FILE *receivedFile;
+void sendFD(int accept_desc, char * fileName, bool trueOrFalse){
 
-    char * fullPathToFile = strncat(pathToDocs, fileName,115);
-    printf("fullPathToFile: %s\n", fullPathToFile);
-    receivedFile = fopen(fullPathToFile, "r");
-    unsigned char buff[256]={0};
+    if (trueOrFalse == true) {
+        FILE *receivedFile;
 
-    int nread = fread(buff, 1, 256, receivedFile);
-    while (nread > 0){
-        send(accept_desc, buff, nread, 0);
-        nread = fread(buff, 1, 256, receivedFile);
+        char *fullPathToFile = strncat(pathToDocs, fileName, 115);
+        printf("fullPathToFile: %s\n", fullPathToFile);
+        receivedFile = fopen(fullPathToFile, "r");
+        unsigned char buff[256] = {0};
+
+        int nread = fread(buff, 1, 256, receivedFile);
+        while (nread > 0) {
+            send(accept_desc, buff, nread, 0);
+            nread = fread(buff, 1, 256, receivedFile);
+        }
+        if (nread < 0) {
+            fprintf(stderr, "Error reading remote file\n");
+        }
+        fclose(receivedFile);
     }
-    if( nread<0 ) {
-        fprintf(stderr, "Error reading remote file\n");
-    }
-    fclose(receivedFile);
-/*
-    bytesSent = send(accept_desc, responseBuffer, strlen(responseBuffer), 0);
-    if (bytesSent == -1){
-        printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
-    }
-    */
 
 }
 
@@ -54,10 +46,6 @@ void sendFD(int accept_desc, char * fileName){
 void handle_connection(int accept_desc) {
     char HTTPHeader[10000];
     int bytesRead;
-    //int cursor = 0;
-    //char requestBuffer[MAX_BUFFER_SIZE];
-
-    //memset(requestBuffer, 0, MAX_BUFFER_SIZE);
 
     while (1) {
         bytesRead = recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in HTTPBuffer
@@ -89,22 +77,18 @@ printf("Yay! Got a file request");
             sendFD(accept_desc, start, true);
             return;
         }
-
-
-        //cursor = 0;
-        //memset(requestBuffer, 0, MAX_BUFFER_SIZE);
-
-
-        /*} else {
-
-            if (cursor < MAX_BUFFER_SIZE) {
-                requestBuffer[cursor] = 0;
-                cursor++;
+        else if (strncmp(HTTPHeader, "HEAD", 4) == 0){
+            char * start = &HTTPHeader[5];
+            char * end = strchr(start, ' ');
+            if (end == NULL){
+                printf("MAYDAY");
+                return;
             }
-
-
+            *end = '\0';
+            sendFD(accept_desc, start, false);
+            return;
         }
-*/
+
     }
 }
 
