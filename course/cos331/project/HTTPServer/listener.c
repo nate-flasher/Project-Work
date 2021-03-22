@@ -9,6 +9,8 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define MYHOST "localhost"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
@@ -19,17 +21,80 @@ char * portNumber;
 
 
 
-void sendFD(int accept_desc, char * fileName, bool trueOrFalse){
+void sendJpegHeaders(){
+
+}
+
+void sendPngHeaders(){
+
+}
+
+void sendGifHeaders(){
+
+}
+
+void sendPdfHeaders(){
+
+}
+
+void sendJavascriptHeaders(){
+
+}
+
+void sendHtmlHeaders(int accept_desc, long contentLength, char * contentType){
+/*
+char * reply2 = "HTTP/1.1 200 OK\n"
+                "Date: Thu, 19 Feb 2009 12:27:04 GMT\n"
+                "Content-Type: text/html\n"
+                "Content-Length: X\n" //%d
+                "Connection: close get lost\n"
+                "\n";
+*/
+    char reply [1024];
+    sprintf(reply,
+            "HTTP/1.1 200 OK\n"
+            "Date: Thu, 19 Feb 2009 12:27:04 GMT\n"
+            "Content-Type: %s\n"
+            "Content-Length: %ld\n" //%d
+            "Connection: close\n"
+            "\n", contentType, contentLength);
+    printf("%s\n", reply);
+    send(accept_desc, reply, strlen(reply), 0);
+}
+
+void sendPlainHeaders(){
+
+}
+
+void sendCssHeaders(){
+
+}
+
+off_t sizeOfFile(char * fileName){
+
+    struct stat fileInfo;
+
+    char *fullPathToFile = strncat(pathToDocs, fileName, 115);
+    printf("fullPathToFile: %s\n", fullPathToFile);
+
+    if (stat(fullPathToFile, &fileInfo) == -1){
+        printf("Error: Stat failed");
+        return -1;
+    }
+    return fileInfo.st_size;
+}
+
+ void sendFD(int accept_desc, char * fileName, bool trueOrFalse){
 
     if (trueOrFalse == true) {
         FILE *receivedFile;
 
-        char *fullPathToFile = strncat(pathToDocs, fileName, 115);
-        printf("fullPathToFile: %s\n", fullPathToFile);
-        receivedFile = fopen(fullPathToFile, "r");
+        //char *fullPathToFile = strncat(pathToDocs, fileName, 115);
+        //printf("fullPathToFile: %s\n", fullPathToFile);
+        receivedFile = fopen(pathToDocs, "r");
         unsigned char buff[256] = {0};
 
-        int nread = fread(buff, 1, 256, receivedFile);
+        unsigned long nread = fread(buff, 1, 256, receivedFile);
         while (nread > 0) {
             send(accept_desc, buff, nread, 0);
             nread = fread(buff, 1, 256, receivedFile);
@@ -39,7 +104,6 @@ void sendFD(int accept_desc, char * fileName, bool trueOrFalse){
         }
         fclose(receivedFile);
     }
-
 }
 
 
@@ -66,6 +130,7 @@ printf("HTTPHeader == 0 len");
         printf("%s", HTTPHeader);
         if (strncmp(HTTPHeader, "GET", 3) == 0) { //checks if GET request and if looking for /index.html  (SEND condition)
 printf("Yay! Got a file request");
+
             // NOTE: Trashing header
             char * start = &HTTPHeader[4];
             char * end = strchr(start, ' ');
@@ -74,14 +139,28 @@ printf("Yay! Got a file request");
                 return;
             }
             *end = '\0';
+
+            off_t fileSize = sizeOfFile(start);
+
+            if (strstr(HTTPHeader, ".html") != NULL){
+                sendHtmlHeaders(accept_desc, (long) fileSize, "text/html");
+            }
+
+            else if (strstr(HTTPHeader, ".jpeg") != NULL){
+                sendHtmlHeaders(accept_desc, (long) fileSize, "/jpeg");
+            }
+
+
             sendFD(accept_desc, start, true);
+
             return;
         }
+
         else if (strncmp(HTTPHeader, "HEAD", 4) == 0){
             char * start = &HTTPHeader[5];
             char * end = strchr(start, ' ');
             if (end == NULL){
-                printf("MAYDAY");
+                printf("MAYDAY 2");
                 return;
             }
             *end = '\0';
