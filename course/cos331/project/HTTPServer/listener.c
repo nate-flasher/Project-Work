@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #define MYHOST "localhost"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
@@ -21,7 +22,23 @@ char * portNumber;
 
 
 
-void sendJpegHeaders(){
+void sendJpegHeaders(int accept_desc, long contentLength, char * contentType){
+
+    char timeBuf[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(timeBuf, sizeof(timeBuf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+
+    char reply [1024];
+    sprintf(reply,
+            "HTTP/1.1 200 OK\n"
+            "Date: %s\n"
+            "Content-Type: %s\n"
+            "Content-Length: %ld\n" //%d
+            "Connection: close\n"
+            "\n", timeBuf, contentType, contentLength);
+    printf("%s\n", reply);
+    send(accept_desc, reply, strlen(reply), 0);
 
 }
 
@@ -42,22 +59,19 @@ void sendJavascriptHeaders(){
 }
 
 void sendHtmlHeaders(int accept_desc, long contentLength, char * contentType){
-/*
-char * reply2 = "HTTP/1.1 200 OK\n"
-                "Date: Thu, 19 Feb 2009 12:27:04 GMT\n"
-                "Content-Type: text/html\n"
-                "Content-Length: X\n" //%d
-                "Connection: close get lost\n"
-                "\n";
-*/
+    char timeBuf[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(timeBuf, sizeof(timeBuf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+
     char reply [1024];
     sprintf(reply,
             "HTTP/1.1 200 OK\n"
-            "Date: Thu, 19 Feb 2009 12:27:04 GMT\n"
+            "Date: %s\n"
             "Content-Type: %s\n"
             "Content-Length: %ld\n" //%d
             "Connection: close\n"
-            "\n", contentType, contentLength);
+            "\n", timeBuf, contentType, contentLength);
     printf("%s\n", reply);
     send(accept_desc, reply, strlen(reply), 0);
 }
@@ -84,13 +98,12 @@ off_t sizeOfFile(char * fileName){
     return fileInfo.st_size;
 }
 
+
  void sendFD(int accept_desc, char * fileName, bool trueOrFalse){
 
     if (trueOrFalse == true) {
         FILE *receivedFile;
 
-        //char *fullPathToFile = strncat(pathToDocs, fileName, 115);
-        //printf("fullPathToFile: %s\n", fullPathToFile);
         receivedFile = fopen(pathToDocs, "r");
         unsigned char buff[256] = {0};
 
@@ -128,6 +141,8 @@ printf("HTTPHeader == 0 len");
         }
 
         printf("%s", HTTPHeader);
+
+
         if (strncmp(HTTPHeader, "GET", 3) == 0) { //checks if GET request and if looking for /index.html  (SEND condition)
 printf("Yay! Got a file request");
 
@@ -142,12 +157,13 @@ printf("Yay! Got a file request");
 
             off_t fileSize = sizeOfFile(start);
 
+
             if (strstr(HTTPHeader, ".html") != NULL){
                 sendHtmlHeaders(accept_desc, (long) fileSize, "text/html");
             }
 
             else if (strstr(HTTPHeader, ".jpeg") != NULL){
-                sendHtmlHeaders(accept_desc, (long) fileSize, "/jpeg");
+                sendJpegHeaders(accept_desc, (long) fileSize, "/jpg");
             }
 
 
@@ -177,6 +193,7 @@ int main(int argc, char *argv[]) {
         printf("Error: more or less than 3 command line arguments");
         return 0;
     }
+
 
     strncpy(pathToDocs,argv[1], 1024); //stores file path to access docs from taken from command line
     portNumber = argv[2]; //stores port number passed in from command line into variable
