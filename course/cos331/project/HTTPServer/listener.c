@@ -163,7 +163,7 @@ printf("Yay! Got a file request");
             }
 
             else if (strstr(HTTPHeader, ".jpeg") != NULL){
-                sendJpegHeaders(accept_desc, (long) fileSize, "/jpg");
+                sendJpegHeaders(accept_desc, (long) fileSize, "/jpeg");
             }
 
 
