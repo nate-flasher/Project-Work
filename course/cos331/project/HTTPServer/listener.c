@@ -15,14 +15,20 @@
 
 #define MYHOST "localhost"
 #define MAX_CLIENT_BACKLOG 128 //amount of connections allowed at maximum to connect at one time or our socket
-#define MAX_BUFFER_SIZE 256
+#define IS_MULTIPROCESS 1
+
 
 char pathToDocs[1024];
 char * portNumber;
 
 
 
-void sendJpegHeaders(int accept_desc, long contentLength, char * contentType){
+void sendHeaders(int accept_desc, long contentLength, char * contentType){
+
+    if (contentLength == -1){
+        printf("%d", contentLength);
+        printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
+    }
 
     char timeBuf[1000];
     time_t now = time(0);
@@ -37,51 +43,8 @@ void sendJpegHeaders(int accept_desc, long contentLength, char * contentType){
             "Content-Length: %ld\n" //%d
             "Connection: close\n"
             "\n", timeBuf, contentType, contentLength);
-    printf("%s\n", reply);
+    //printf("%s\n", reply);
     send(accept_desc, reply, strlen(reply), 0);
-
-}
-
-void sendPngHeaders(){
-
-}
-
-void sendGifHeaders(){
-
-}
-
-void sendPdfHeaders(){
-
-}
-
-void sendJavascriptHeaders(){
-
-}
-
-void sendHtmlHeaders(int accept_desc, long contentLength, char * contentType){
-    char timeBuf[1000];
-    time_t now = time(0);
-    struct tm tm = *gmtime(&now);
-    strftime(timeBuf, sizeof(timeBuf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
-
-    char reply [1024];
-    sprintf(reply,
-            "HTTP/1.1 200 OK\n"
-            "Date: %s\n"
-            "Content-Type: %s\n"
-            "Content-Length: %ld\n" //%d
-            "Connection: close\n"
-            "\n", timeBuf, contentType, contentLength);
-    printf("%s\n", reply);
-    send(accept_desc, reply, strlen(reply), 0);
-}
-
-void sendPlainHeaders(){
-
-}
-
-void sendCssHeaders(){
-
 }
 
 off_t sizeOfFile(char * fileName){
@@ -89,12 +52,13 @@ off_t sizeOfFile(char * fileName){
     struct stat fileInfo;
 
     char *fullPathToFile = strncat(pathToDocs, fileName, 115);
-    printf("fullPathToFile: %s\n", fullPathToFile);
+    //printf("fullPathToFile: %s\n", fullPathToFile);
 
     if (stat(fullPathToFile, &fileInfo) == -1){
         printf("Error: Stat failed");
         return -1;
     }
+
     return fileInfo.st_size;
 }
 
@@ -126,9 +90,9 @@ void handle_connection(int accept_desc) {
 
     while (1) {
         bytesRead = recv(accept_desc, &HTTPHeader, 10000, 0); //puts received data in HTTPBuffer
-printf("%d bytes read\n", bytesRead);
+        //printf("%d bytes read\n", bytesRead);
         if (bytesRead <= 0) {
-printf("<=0 bytes read");
+        //printf("<=0 bytes read");
             if (bytesRead == -1) {
                 printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
             }
@@ -136,15 +100,15 @@ printf("<=0 bytes read");
         }
 
         else if (strlen(HTTPHeader) == 0) {
-printf("HTTPHeader == 0 len");
+            printf("HTTPHeader == 0 len");
             return;
         }
 
-        printf("%s", HTTPHeader);
+        //printf("%s", HTTPHeader);
 
 
         if (strncmp(HTTPHeader, "GET", 3) == 0) { //checks if GET request and if looking for /index.html  (SEND condition)
-printf("Yay! Got a file request");
+            //printf("Yay! Got a file request");
 
             // NOTE: Trashing header
             char * start = &HTTPHeader[4];
@@ -159,11 +123,28 @@ printf("Yay! Got a file request");
 
 
             if (strstr(HTTPHeader, ".html") != NULL){
-                sendHtmlHeaders(accept_desc, (long) fileSize, "text/html");
+                sendHeaders(accept_desc, (long) fileSize, "text/html");
             }
-
-            else if (strstr(HTTPHeader, ".jpeg") != NULL){
-                sendJpegHeaders(accept_desc, (long) fileSize, "/jpeg");
+            else if (strstr(HTTPHeader, ".jpeg") != NULL || strstr(HTTPHeader, ".jpg") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/jpeg");
+            }
+            else if (strstr(HTTPHeader, ".png") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/png");
+            }
+            else if (strstr(HTTPHeader, ".gif") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/gif");
+            }
+            else if (strstr(HTTPHeader, ".pdf") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "application/pdf");
+            }
+            else if (strstr(HTTPHeader, ".javascript") != NULL || strstr(HTTPHeader, ".js") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "application/javascript");
+            }
+            else if (strstr(HTTPHeader, ".plain") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "text/plain");
+            }
+            else if (strstr(HTTPHeader, ".css") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "text/css");
             }
 
 
@@ -180,6 +161,34 @@ printf("Yay! Got a file request");
                 return;
             }
             *end = '\0';
+
+            off_t fileSize = sizeOfFile(start);
+
+            if (strstr(HTTPHeader, ".html") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "text/html");
+            }
+            else if (strstr(HTTPHeader, ".jpeg") != NULL || strstr(HTTPHeader, ".jpg") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/jpeg");
+            }
+            else if (strstr(HTTPHeader, ".png") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/png");
+            }
+            else if (strstr(HTTPHeader, ".gif") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "image/gif");
+            }
+            else if (strstr(HTTPHeader, ".pdf") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "application/pdf");
+            }
+            else if (strstr(HTTPHeader, ".javascript") != NULL || strstr(HTTPHeader, ".js") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "application/javascript");
+            }
+            else if (strstr(HTTPHeader, ".plain") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "text/plain");
+            }
+            else if (strstr(HTTPHeader, ".css") != NULL){
+                sendHeaders(accept_desc, (long) fileSize, "text/css");
+            }
+
             sendFD(accept_desc, start, false);
             return;
         }
@@ -257,15 +266,35 @@ int main(int argc, char *argv[]) {
         return return_value;
     }
 
+    while(1){
 
-    //accept is function that gets triggered when data comes in on our socket. Second param specific address of where data is coming in from
-    accept_desc = accept(socket_descriptor, (struct sockaddr *) &remote_addr, &remote_addr_size); //blocking function. waits for data to be received
-    //now we will do something with the data coming in on the socket
+        accept_desc = accept(socket_descriptor, (struct sockaddr *) &remote_addr, &remote_addr_size);
 
-    handle_connection(accept_desc); //handle data coming in on socket
+        #if IS_MULTIPROCESS == 1
+            int pid = fork();
 
-    close(accept_desc);
-    close(socket_descriptor);
+            if (pid == 0){ //child process starts ...
 
-    return 0;
+                handle_connection(accept_desc);
+                close(accept_desc);
+                close(socket_descriptor);
+                exit(0); // ... child process terminated
+
+            }
+
+            if (pid == -1){
+                printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
+                return pid;
+            }
+
+            close(accept_desc);
+
+#else
+        accept_desc = accept(socket_descriptor, (struct sockaddr *) &remote_addr, &remote_addr_size);
+        handle_connection(accept_desc);
+        close(accept_desc);
+#endif
+    }
+
+
 }
