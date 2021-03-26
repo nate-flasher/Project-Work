@@ -23,7 +23,7 @@ char * portNumber;
 
 void sendFileNotFoundHeader(int accept_desc, long contentLength, char * contentType){
 
-    contentLength = 14;
+    contentLength = 25;
 
     char timeBuf[1000];
     time_t now = time(0);
