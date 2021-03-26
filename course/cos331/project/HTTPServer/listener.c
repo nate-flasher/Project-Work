@@ -50,7 +50,7 @@ void sendHeaders(int accept_desc, long contentLength, char * contentType){
         //printf("%ld", contentLength);
         printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
 
-        sendFileNotFoundHeader(accept_desc, contentLength, contentType);
+        sendFileNotFoundHeader(accept_desc, contentLength, contentType); //call function to send error headers
     }
 
     char timeBuf[1000];
