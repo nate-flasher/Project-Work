@@ -21,13 +21,36 @@
 char pathToDocs[1024];
 char * portNumber;
 
+void sendFileNotFoundHeader(int accept_desc, long contentLength, char * contentType){
 
+    contentLength = 14;
+
+    char timeBuf[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(timeBuf, sizeof(timeBuf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    char reply [1024];
+    sprintf(reply,
+            "HTTP/1.1 404 Not Found\n"
+            "Date: %s\n"
+            "Content-Type: %s\n"
+            "Content-Length: %ld\n" //%d
+            "Connection: close\n"
+            "\n"
+            "Error 404: File Not Found",
+            timeBuf, contentType, contentLength);
+    //printf("%s\n", reply);
+    send(accept_desc, reply, strlen(reply), 0);
+
+}
 
 void sendHeaders(int accept_desc, long contentLength, char * contentType){
 
     if (contentLength == -1){
-        printf("%d", contentLength);
+        //printf("%ld", contentLength);
         printf("Error: %s (line: %d)\n", strerror(errno), __LINE__);
+
+        sendFileNotFoundHeader(accept_desc, contentLength, contentType);
     }
 
     char timeBuf[1000];
@@ -120,7 +143,6 @@ void handle_connection(int accept_desc) {
             *end = '\0';
 
             off_t fileSize = sizeOfFile(start);
-
 
             if (strstr(HTTPHeader, ".html") != NULL){
                 sendHeaders(accept_desc, (long) fileSize, "text/html");
