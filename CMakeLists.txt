@@ -3,4 +3,4 @@ project(nflasher C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(nflasher main.c)
+add_executable(nflasher main.c course/cos331/lab/RFT/RFTcodetogether.c)
