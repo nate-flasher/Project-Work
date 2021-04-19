@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/CS/users/nflasher/.linux/nflasher/course/cos331/lab/RFTgood/main.c
+stdio.h
+-
+netinet/ip.h
+-
+netinet/udp.h
+-
+string.h
+-
+arpa/inet.h
+-
+stdlib.h
+-
+
