@@ -11,14 +11,19 @@
 -Describe, in your own words, the patch in detail
 
 
-
-
-
-
-
-
-
-
+Shellshock is the name of a vulnerabilty in computer systems that has been around for about 3 decades now. 
+The vulnerability was discovered by Stéphane Chazelas, on September 12, 2014 where Chazelas found a bug in 
+the Bash command line shell, and was given the CVE of CVE-2014-6271. A fix/patch was implemented through an
+update 10 days later on September 24, 2014. By exploiting shellshock, an attacker is able to escalate their
+own priviledges in the system that they otherwise would not have. This allows the attacker to then do what 
+they desire with the system. The vulnerability is exploited by attackers today relatively quite often because 
+of the simplicity of the attack, low cost, and small amount of knowledge needed in comparison to other 
+vulnerabilities.The common weakness found from the Common Weakness Enumeration for vulnerabilities such as 
+shellshock is the unintentional allowance for attackers to execute unintended, malicious commands, they should 
+not have access to, directly on the operating system. The system is yet at more risk if it does not follow the
+principle of least privilege, meaning the system will then not prevent the attacker from obtaining the privileges
+that allow for them to inflict yet more damage with commands they wouldn't have had access to if the principle 
+was in effect in the system. 
 
 
 
@@ -28,3 +33,5 @@
 Sources used in analysis:
 
 https://securityintelligence.com/articles/shellshock-vulnerability-in-depth/
+
+https://dwheeler.com/essays/shellshock.html
