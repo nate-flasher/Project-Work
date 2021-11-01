@@ -1,0 +1,30 @@
+-What makes jim vulnerable 
+-What software and versions are present on jim that enable the attack
+-What configurations and/or environmental factors are present on jim that enable the attack
+-What pentest reveals the vulnerability (manual/automated, internal/external)
+-What are the common weakness/es, from CWE, that best describes the shellshock vulnerability
+-What is the CVE for the instance of the shellshock vulnerability on jim
+-When was the exploit discovered and by whom
+-When was the patch released for jim (though jim didn’t take the patch)
+-Describe, in your own words, the vulnerability in detail
+-Describe, in your own words, the exploit and a realistic attack on jim in detail
+-Describe, in your own words, the patch in detail
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sources used in analysis:
+
+https://securityintelligence.com/articles/shellshock-vulnerability-in-depth/
