@@ -2,36 +2,70 @@
 -What software and versions are present on jim that enable the attack
 -What configurations and/or environmental factors are present on jim that enable the attack
 -What pentest reveals the vulnerability (manual/automated, internal/external)
--What are the common weakness/es, from CWE, that best describes the shellshock vulnerability
--What is the CVE for the instance of the shellshock vulnerability on jim
--When was the exploit discovered and by whom
--When was the patch released for jim (though jim didn’t take the patch)
--Describe, in your own words, the vulnerability in detail
+-What are the common weakness/es, from CWE, that best describes the shellshock--------------- vulnerability------------------
+-What is the CVE for the instance of the shellshock vulnerability on jim-----------------------
+-When was the exploit discovered and by whom-----------------------
+-When was the patch released for jim (though jim didn’t take the patch)-----------------
+-Describe, in your own words, the vulnerability in detail-----------------
 -Describe, in your own words, the exploit and a realistic attack on jim in detail
 -Describe, in your own words, the patch in detail
 
+11/01
 
-Shellshock is the name of a vulnerabilty in computer systems that has been around for about 3 decades now. 
-The vulnerability was discovered by Stéphane Chazelas, on September 12, 2014 where Chazelas found a bug in 
-the Bash command line shell, and was given the CVE of CVE-2014-6271. A fix/patch was implemented through an
-update 10 days later on September 24, 2014. By exploiting shellshock, an attacker is able to escalate their
-own priviledges in the system that they otherwise would not have. This allows the attacker to then do what 
-they desire with the system. The vulnerability is exploited by attackers today relatively quite often because 
-of the simplicity of the attack, low cost, and small amount of knowledge needed in comparison to other 
-vulnerabilities.The common weakness found from the Common Weakness Enumeration for vulnerabilities such as 
-shellshock is the unintentional allowance for attackers to execute unintended, malicious commands, they should 
-not have access to, directly on the operating system. The system is yet at more risk if it does not follow the
-principle of least privilege, meaning the system will then not prevent the attacker from obtaining the privileges
-that allow for them to inflict yet more damage with commands they wouldn't have had access to if the principle 
-was in effect in the system. 
+Shellshock is the name of a vulnerabilty in computer systems that has been around for about 3 decades now. The vulnerability was discovered by Stéphane Chazelas, on September 12, 2014 where Chazelas found a bug in the Bash command line shell, and was given the CVE of CVE-2014-6271. A fix/patch was implemented through an update 10 days later on September 24, 2014. By exploiting shellshock, an attacker is able to escalate their own priviledges in the system that they otherwise would not have. This allows the attacker to then do what they desire with the system. The vulnerability is exploited by attackers today relatively quite often because of the simplicity of the attack, low cost, and small amount of knowledge needed in comparison to other vulnerabilities. The common weakness found from the Common Weakness Enumeration for vulnerabilities such as shellshock is the unintentional allowance for attackers to execute unintended, malicious commands, they should not have access to, directly on the operating system. The system is yet at more risk if it does not follow the principle of least privilege, meaning the system will then not prevent the attacker from obtaining the privileges that allow for them to inflict yet more damage with commands they wouldn't have had access to if the principle was in effect in the system. 
+
+11/02
+
+I have spent about 3 and a half hours trying to exploit the shell shock vulnerability now and I am stuck. I have attempted numerous command such as: 
+
+curl -H "User-Agent: () { :; }; echo; echo; /bin/bash -c 'id'" "http://10.121.21.101/cgi-bin/test.cgi"
+
+curl -H "User-Agent: () { :; }; echo; echo; /bin/bash -c 'id'" "http://10.121.21.101/cgi-bin/test.cgi"
+
+curl -H 'User-Agent: () { :; }; echo vulnerable' bash -c "echo test" 
+
+curl -H 'User-Agent: () { :; }; echo ; echo ; /bin/cat /etc/passwd' bash -s :'' http://10.121.21.101/
+
+ssh -i kali 10.121.21.101 -t '() { :; }; id'
+
+ssh 10.121.21.101 '() { :; }; id'  
+
+and more...
+
+Today I slacked Dr. Stanley and he helped me by asking me the right questions I needed to answer to understand what my command attack was doing. I learned that the bash bug is specifically in how bash interprets the following: () { :; }; By having bash interpret this empty function, it gets confused and lets you inject a payload of your own after it. I also learned that the User-Agent variable gets passed to bash by the web server. This is important because the attacker controls what the User-Agent variable is because it comes to the web server as a request. Unfortunately, 10.121.21.101 (Jim) does not pass the User-Agent variable to bash. So I am going to look for another way for the server to pass, maybe another variable, to bash. 
 
 
 
+question to go off of: if the user agent variable isnt passed to bash by the web server, what variable/header is? 
+
+
+11/03
+
+Today for about the first hour of analysis, I attempted to use all the different request headers with curl as attack vectors to gain a reverse shell. None of these worked. I spent more time researching how I could potentially force the web server to pass the request headers to bash. This went nowhere. I asked Dr. Stanley for help again and he told me to revist the stackexchange site I found yesterday. In doing this I realized I need to access a cgi script on Jim in order for my User Agent header variable to get executed and become an environment variable. Now I have been searching for any cgi file that could be on Jim using Dirbuster...this is tedious. I have brute forced searched for files ending with .cgi and with no extension in this directoy: 10.121.21.101/cgi-bin/ with no luck. I am calling it quits for today. 
+
+
+
+Notes: 
+
+inrn pentest -> port 22 ssh port, but cant use this for vulnerability
+theres web requests we can send on 80? port 80 is http
+
+put file on jim server saying youve been affected is enough
 
 
 
 Sources used in analysis:
 
+https://security.stackexchange.com/questions/68216/how-are-you-able-to-inject-bash-script-through-the-user-agent
+
 https://securityintelligence.com/articles/shellshock-vulnerability-in-depth/
 
 https://dwheeler.com/essays/shellshock.html
+
+https://www.youtube.com/watch?v=aCj-Khvg5n0
+
+https://www.sevenlayers.com/index.php/125-exploiting-shellshock
+
+https://coderwall.com/p/5db5eg/understanding-the-shellshock-vulnerability
+
+https://security.stackexchange.com/questions/68216/how-are-you-able-to-inject-bash-script-through-the-user-agent
