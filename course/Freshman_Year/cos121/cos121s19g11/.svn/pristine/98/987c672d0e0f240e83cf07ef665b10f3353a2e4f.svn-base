@@ -1,0 +1,12 @@
+CXXFLAGS = -g -Wall -Og -std=c++11
+CXX = g++
+
+INFECTIONSIMULATOROBJECTS = Board.o conio.o Human.o main.o
+
+SIMULATE: $(INFECTIONSIMULATOROBJECTS)
+	g++ -o SIMULATE $(INFECTIONSIMULATOROBJECTS)
+	@echo "The program is in ./SIMULATE"
+
+clean:
+	rm -f SIMULATE $(INFECTIONSIMULATOROBJECTS)
+

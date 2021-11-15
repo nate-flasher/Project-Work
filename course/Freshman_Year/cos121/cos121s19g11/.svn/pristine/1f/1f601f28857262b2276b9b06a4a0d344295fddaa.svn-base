@@ -1,0 +1,163 @@
+/**
+ * @name Your name(s)
+ * @file ListArray.cpp
+ * @brief The array-based List class implementation file.
+ */
+
+#ifndef LISTARRAY_CPP
+#define LISTARRAY_CPP
+
+#include <iostream>
+#include "ListArray.h"
+
+using namespace std;
+
+template <typename DataType>
+List<DataType>::List()
+// Initialize the object's member variables
+: maxSize(defaultMaxSize), size(0), cursor(-1)
+{
+    // Make the array to put the items in and point dataItems there.
+    dataItems = new DataType[maxSize];
+}
+
+template <typename DataType>
+List<DataType>::List( int maxItems ) {
+    // You do: fill in code for this function.
+}
+
+template <typename DataType>
+List<DataType>::List( const List<DataType>& other ) {
+    // You do: create dataItems array and copy all valid data from the other list
+
+}
+
+template <typename DataType>
+List<DataType>::~List() {
+    // You do: return dynamically allocated memory
+
+}
+
+template <typename DataType>
+List<DataType>& List<DataType>::operator=( const List<DataType>& other ) {
+    // Handle being asked to assign yourself to yourself
+    // Do that by comparing address of other list to your address.
+
+    // You do: delete your dataItems array
+
+    // You do: make a new dataItems array of the correct size
+
+    // To get chained assignment working, return a reference to yourself
+    // by doing following. Chained assignment is "a = b = c".
+    return *this;
+}
+
+// Iterators
+
+template <typename DataType>
+bool List<DataType>::gotoNext() {
+}
+
+template <typename DataType>
+bool List<DataType>::gotoPrior() {
+}
+
+template <typename DataType>
+void List<DataType>::gotoBeginning() throw (logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::gotoEnd() throw (logic_error) {
+}
+
+// Observers
+
+template <typename DataType>
+bool List<DataType>::isEmpty() const {
+}
+
+template <typename DataType>
+bool List<DataType>::isFull() const {
+}
+
+template <typename DataType>
+int List<DataType>::getCursorPosition() const {
+}
+
+template <typename DataType>
+int List<DataType>::getSize() const {
+}
+
+template <typename DataType>
+DataType List<DataType>::getCursor() const throw (logic_error) {
+}
+
+
+template <typename DataType>
+DataType List<DataType>::operator[]( int position ) const throw (logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::showStructure() const                      // Debugging function
+// Outputs the data items in a list. if the list is empty, outputs
+// "empty list". this operation is intended for testing/debugging
+// purposes only.
+
+{
+    int j;   // loop counter
+
+    if ( size == 0 )
+       cout << "empty list" << endl;
+    else
+    {
+       cout << "size = " << size
+            <<  "   cursor = " << cursor << endl;
+       for ( j = 0 ; j < maxSize ; j++ )
+           cout << j << "\t";
+       cout << endl;
+       for ( j = 0 ; j < size ; j++ ) {
+           if( j == cursor ) {
+              cout << "[";
+              cout << dataItems[j];
+              cout << "]";
+              cout << "\t";
+           }
+           else
+              cout << dataItems[j] << "\t";
+       }
+       cout << endl;
+    }
+}
+
+// Transformers/mutators
+template <typename DataType>
+bool List<DataType>::search( DataType value ) {
+}
+
+template <typename DataType>
+void List<DataType>::add( const DataType& newItem ) throw (logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::add( const List<DataType>& otherList ) throw (logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::remove( ) throw ( logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::remove( const DataType& delItem ) {
+}
+
+template <typename DataType>
+void List<DataType>::replace( const DataType& replaceItem ) throw (logic_error) {
+}
+
+template <typename DataType>
+void List<DataType>::clear() {
+    // Don't throw away the array. Just declare it to be empty.
+
+}
+
+#endif     // #ifndef LIST_CPP

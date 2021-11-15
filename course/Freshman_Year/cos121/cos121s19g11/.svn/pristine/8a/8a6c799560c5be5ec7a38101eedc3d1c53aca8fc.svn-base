@@ -1,0 +1,162 @@
+#ifndef LISTLINKED_CPP
+#define LISTLINKED_CPP
+
+#include <iostream>
+#include <stdexcept>
+
+#include "ListLinked.h"
+
+using namespace std;
+
+template <typename DataType>
+List<DataType>::ListNode::ListNode( DataType newData, ListNode* next ) {
+}
+
+template <typename DataType>
+List<DataType>::List() {
+
+}
+
+template <typename DataType>
+List<DataType>::List(int /* maxItems */) {
+
+}
+
+template <typename DataType>
+List<DataType>::List(const List& other) {
+
+}
+
+template <typename DataType>
+List<DataType>::~List() {
+
+}
+
+template <typename DataType>
+List<DataType>& List<DataType>::operator=(const List& other) {
+
+}
+
+
+// Iterators
+template <typename DataType>
+bool List<DataType>::gotoNext() {
+
+}
+
+template <typename DataType>
+bool List<DataType>::gotoPrior() {
+
+}
+
+template <typename DataType>
+void List<DataType>::gotoBeginning() throw(logic_error){
+
+}
+
+template <typename DataType>
+void List<DataType>::gotoEnd() throw(logic_error){
+
+}
+
+
+// Observers
+template <typename DataType>
+bool List<DataType>::isEmpty() const {
+
+}
+
+template <typename DataType>
+bool List<DataType>::isFull() const {
+
+}
+
+template <typename DataType>
+int List<DataType>::getCursorPosition() const {
+
+}
+
+template <typename DataType>
+int List<DataType>::getSize() const {
+
+}
+
+template <typename DataType>
+DataType List<DataType>::getCursor() const throw (logic_error) {
+
+}
+
+template <typename DataType>
+DataType List<DataType>::operator[]( int position ) const throw (logic_error) {
+
+}
+
+template <typename DataType>
+void List<DataType>::showStructure() const {
+
+// Outputs the items in a list. If the list is empty, outputs
+// "Empty list". This operation is intended for testing and
+// debugging purposes only.
+
+    if ( isEmpty() )
+    {
+       cout << "Empty list" << endl;
+    } 
+    else
+    {
+	for (ListNode* temp = head; temp != 0; temp = temp->next) {
+	    if (temp == cursor) {
+		cout << "[";
+	    }
+
+	    // Assumes that dataItem can be printed via << because
+	    // is is either primitive or operator<< is overloaded.
+	    cout << temp->dataItem;	
+
+	    if (temp == cursor) {
+		cout << "]";
+	    }
+	    cout << " ";
+	}
+	cout << endl;
+    }
+}
+		// Debugging function
+
+// Transformers/mutators
+template <typename DataType>
+bool List<DataType>::search(DataType value) {
+
+}
+
+template <typename DataType>
+void List<DataType>::add( const DataType& newItem ) throw (logic_error) {
+
+}
+
+template <typename DataType>
+void List<DataType>::add( const List& otherList ) throw (logic_error) {
+
+}
+
+template <typename DataType>
+void List<DataType>::remove() throw (logic_error) {
+
+}
+
+template <typename DataType>
+void List<DataType>::remove( const DataType& delItem ) {
+
+}
+
+template <typename DataType>
+void List<DataType>::replace( const DataType& replaceItem ) throw (logic_error) {
+
+}
+
+template <typename DataType>
+void List<DataType>::clear() {
+
+}
+
+#endif

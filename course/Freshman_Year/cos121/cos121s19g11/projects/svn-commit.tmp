@@ -1,0 +1,6 @@
+Started to deal with placing ships, got seg faults
+
+--This line, and those below, will be ignored--
+
+M    battleships/Makefile
+M    battleships/tester.cpp

@@ -1,0 +1,8 @@
+﻿racecar
+civic
+apartment
+car
+radar
+chair
+computer
+thorn
